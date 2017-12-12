@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+  <head>
+    <title>AD chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+    </style>
+  </head>
+  <body>
+    <form action="">
+            Username: <input id="name" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+    $(function () {
+        var socket = io();
+        $('form').submit(function(){
+        socket.emit('add user', $('#name').val());
+        $('#name').val('');
+        return false;
+        });
+        socket.on('redirect', function(destination) {
+        window.location.href = '/chat';
+        });
+    });
+    </script>
+  </body>
+</html>
