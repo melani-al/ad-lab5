@@ -2,11 +2,13 @@
 <html>
   <head>
     <title>AD chat</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       body { font: 13px Helvetica, Arial; }
-      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 75%; }
       form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
       form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
       #messages { list-style-type: none; margin: 0; padding: 0; }
@@ -19,10 +21,22 @@
     <div id='dialog' title="Enter your username">
         Username: <input id="name"/>
     </div>
-    <ul id="messages"></ul>
-    <form action="" id="text">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+    <!-- Sidebar -->
+    <div id=peopleList class="w3-sidebar w3-light-grey w3-bar-block" style="width:25%">
+      <h3 class="w3-bar-item">People: </h3>
+    </div>
+
+    <!-- Page content -->
+    <div style="margin-left:25%">
+
+      <div class="w3-container">
+        <ul id="messages"></ul>
+        <form action="" id="text">
+          <input id="m" autocomplete="off" /><button>Send</button>
+      </form>
+      </div>
+      
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-1.12.1.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -30,6 +44,15 @@
       var name = "";
     $(function () {
         var socket = io();
+        var userList = [];
+        socket.on('users', function(users){
+          userList = users;
+          $('#peopleList').empty();
+          $('#peopleList').append("<h3 class='w3-bar-item'>People: </h3>");
+          for(var i=0; i<userList.length; i++) {
+            $('#peopleList').append("<a class='w3-bar-item w3-button'>" + userList[i] + "</a>"); 
+          } 
+        });
         $('#text').submit(function(){
           socket.emit('chat message',  "<b>"+ name + ": </b>" + $('#m').val());
           $('#m').val('');
@@ -46,8 +69,11 @@
           modal: true,
           buttons: {
             "Send": function() {
-              name = $('#name').val();
-              dialog.dialog( "close" );
+              if($('#name').val() != "") {
+                name = $('#name').val();
+                dialog.dialog( "close" );
+                socket.emit('add user', name);
+              }
             }
           }
         });
