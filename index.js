@@ -15,14 +15,13 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
   console.log('a user connected');
-  socket.on('disconnect', function(){
+  /*socket.on('disconnect', function(){
     console.log('user disconnected');
-  });
+  });*/
 });
 
 io.on('connection', function(socket){
-  var addedUser = false;
-  
+  var addedUser = false; 
   socket.on('chat message', function(msg){
     io.emit('chat message', msg);
     console.log('message: ' + msg);
@@ -43,6 +42,17 @@ io.on('connection', function(socket){
       username: socket.username,
       numUsers: numUsers
     });
+  });
+  socket.on('disconnect', function(){
+    if (addedUser) {
+      --numUsers;
+      // echo globally that this client has left
+      socket.broadcast.emit('user left', {
+        username: socket.username,
+        numUsers: numUsers
+      });
+    }
+    console.log('user disconnected');
   });
 });
 
