@@ -41,6 +41,7 @@ io.on('connection', function(socket){
       var send2 = "<b>Whisper to "+ name + ": </b>" + messg3;
       io.to(ids[i]).emit('chat message', send1);
       io.to(socket.id).emit('chat message', send2);
+      io.emit('chat message', {})
     }
     else io.emit('chat message', msg);
     console.log('message: ' + msg);
