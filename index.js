@@ -59,6 +59,11 @@ io.on('connection', function(socket){
     console.log(users);
     io.emit('users', users);
   });
+
+    //listening if someone is typing
+    socket.on('typing', function(data){
+        socket.broadcast.emit('typing', data);
+    });
 });
 
 http.listen(3000, function(){
